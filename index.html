@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#245b78">
   <title>Mi asistente</title>
   <style>
     * { box-sizing: border-box; }
@@ -10,114 +11,264 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f3f6fa;
       color: #203047;
-      text-align: center;
+      background: #f3f6fa;
     }
 
     header {
       background: #245b78;
       color: white;
+      text-align: center;
       padding: 28px 16px;
     }
 
     h1 {
       margin: 0;
-      font-size: 34px;
+      font-size: 36px;
     }
 
     header p {
-      font-size: 19px;
-      margin-bottom: 0;
+      margin: 10px 0 0;
+      font-size: 20px;
     }
 
     main {
-      max-width: 650px;
-      margin: auto;
-      padding: 24px 18px;
+      width: min(100% - 28px, 650px);
+      margin: 0 auto;
+      padding: 22px 0;
     }
 
-    h2 { font-size: 25px; }
+    h2 {
+      font-size: 26px;
+      text-align: center;
+      margin: 8px 0 20px;
+    }
+
+    button, textarea, input {
+      font: inherit;
+    }
 
     .opcion {
-      display: block;
       width: 100%;
-      padding: 22px 16px;
-      margin: 16px 0;
+      min-height: 88px;
+      margin: 10px 0;
+      padding: 18px;
       border: 2px solid #245b78;
-      border-radius: 14px;
+      border-radius: 16px;
       background: white;
       color: #203047;
-      font-size: 22px;
+      font-size: 23px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    .opcion:focus {
+    .opcion:focus-visible, button:focus-visible,
+    textarea:focus-visible {
       outline: 4px solid #e0a526;
+      outline-offset: 3px;
     }
 
-    #resultado {
-      margin-top: 24px;
+    .principal {
+      background: #245b78;
+      color: white;
+      border-color: #245b78;
+    }
+
+    .panel {
+      display: none;
+      margin-top: 20px;
       padding: 20px;
       background: white;
-      border-radius: 14px;
+      border-radius: 16px;
+      border: 1px solid #d4dce5;
+    }
+
+    .panel h3 { font-size: 24px; }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 14px;
+      border: 2px solid #8294a6;
+      border-radius: 10px;
+      font-size: 19px;
+    }
+
+    .accion {
+      width: 100%;
+      padding: 16px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 12px;
+      background: #245b78;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .secundaria {
+      background: #e7edf3;
+      color: #203047;
+    }
+
+    #respuesta {
       font-size: 20px;
       line-height: 1.5;
-      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    .nota {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #526579;
     }
 
     footer {
-      padding: 20px;
-      color: #526579;
+      text-align: center;
+      padding: 18px;
       font-size: 16px;
+      color: #526579;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>Mi asistente</h1>
-    <p>La tecnología, más fácil para ti</p>
+    <p>Estoy aquí para ayudarte</p>
   </header>
 
   <main>
-    <h2>¿En qué puedo ayudarte?</h2>
+    <h2>¿Qué necesitas hoy?</h2>
 
-    <button class="opcion" onclick="mostrar('entender')">
-      Entender un texto o mensaje
+    <button class="opcion principal" onclick="abrir('hablar')">
+      🎤 Hablar o escribir
     </button>
 
-    <button class="opcion" onclick="mostrar('movil')">
-      Aprender a usar el móvil
+    <button class="opcion" onclick="abrir('movil')">
+      📱 Aprender a usar el móvil
     </button>
 
-    <button class="opcion" onclick="mostrar('ayuda')">
-      Resolver una duda
+    <button class="opcion" onclick="abrir('personas')">
+      ❤️ Llamar a alguien
     </button>
 
-    <section id="resultado" aria-live="polite">
-      Elige una opción y te ayudaré paso a paso.
+    <button class="opcion" onclick="abrir('entender')">
+      💬 Entender un mensaje
+    </button>
+
+    <section id="hablar" class="panel">
+      <h3>Hablemos</h3>
+      <p>Escribe lo que quieras decir. También puedes probar el micrófono si tu navegador lo permite.</p>
+      <textarea id="pregunta" aria-label="Escribe aquí tu mensaje"
+        placeholder="Escribe aquí..."></textarea>
+      <button class="accion" onclick="dictar()">🎤 Hablar con el micrófono</button>
+      <button class="accion" onclick="leerTexto()">🔊 Escuchar mi texto</button>
+      <p id="estado" class="nota" aria-live="polite"></p>
+    </section>
+
+    <section id="movil" class="panel">
+      <h3>Aprender a usar el móvil</h3>
+      <p>Elige una guía:</p>
+      <button class="accion" onclick="guia('whatsapp')">Enviar un mensaje por WhatsApp</button>
+      <button class="accion" onclick="guia('letra')">Aumentar el tamaño de la letra</button>
+      <button class="accion" onclick="guia('foto')">Enviar una fotografía</button>
+      <p id="guiaTexto" aria-live="polite"></p>
+    </section>
+
+    <section id="personas" class="panel">
+      <h3>Hablar con alguien</h3>
+      <p>Puedes llamar a una persona de confianza desde tu dispositivo.</p>
+      <p class="nota">Todavía tenemos que configurar los contactos. No se realizará ninguna llamada automáticamente.</p>
+    </section>
+
+    <section id="entender" class="panel">
+      <h3>Entender un mensaje</h3>
+      <p>Pega aquí el mensaje que quieres comprender.</p>
+      <textarea id="mensaje" aria-label="Mensaje que quieres entender"
+        placeholder="Pega o escribe el mensaje aquí..."></textarea>
+      <button class="accion" onclick="prepararMensaje()">Mostrar mi mensaje</button>
+      <p id="respuesta" aria-live="polite"></p>
+      <p class="nota">Esta primera versión no interpreta el mensaje con inteligencia artificial. Añadiremos esa función más adelante.</p>
     </section>
   </main>
 
-  <footer>
-    Una ayuda sencilla, clara y cercana.
-  </footer>
+  <footer>Una ayuda sencilla, clara y cercana.</footer>
 
   <script>
-    function mostrar(opcion) {
-      const resultado = document.getElementById('resultado');
+    function abrir(id) {
+      document.querySelectorAll('.panel').forEach(
+        panel => panel.style.display = 'none'
+      );
+      document.getElementById(id).style.display = 'block';
+      document.getElementById(id).scrollIntoView({
+        behavior: 'smooth', block: 'start'
+      });
+    }
 
-      if (opcion === 'entender') {
-        resultado.textContent =
-          'Aquí podrás aprender a entender textos y mensajes con palabras sencillas. Próximamente incorporaremos esta función.';
-      } else if (opcion === 'movil') {
-        resultado.textContent =
-          'Aquí encontrarás explicaciones paso a paso para aprender a usar tu móvil. Próximamente incorporaremos esta función.';
-      } else {
-        resultado.textContent =
-          'Aquí podrás consultar tus dudas y recibir ayuda clara y sencilla. Próximamente incorporaremos esta función.';
+    function dictar() {
+      const Reconocimiento =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!Reconocimiento) {
+        document.getElementById('estado').textContent =
+          'El navegador no permite usar el micrófono aquí. Puedes escribir tu mensaje.';
+        return;
       }
+
+      const reconocimiento = new Reconocimiento();
+      reconocimiento.lang = 'es-ES';
+      reconocimiento.onresult = evento => {
+        document.getElementById('pregunta').value =
+          evento.results[0][0].transcript;
+        document.getElementById('estado').textContent =
+          'Texto reconocido. Puedes escucharlo con el botón de abajo.';
+      };
+      reconocimiento.onerror = () => {
+        document.getElementById('estado').textContent =
+          'No se pudo activar el micrófono. Comprueba los permisos o escribe tu mensaje.';
+      };
+      reconocimiento.start();
+      document.getElementById('estado').textContent =
+        'Escuchando...';
+    }
+
+    function leerTexto() {
+      const texto = document.getElementById('pregunta').value.trim();
+      if (!texto) {
+        document.getElementById('estado').textContent =
+          'Primero escribe o dicta algo.';
+        return;
+      }
+
+      if (!('speechSynthesis' in window)) {
+        document.getElementById('estado').textContent =
+          'Tu navegador no permite leer el texto en voz alta.';
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const voz = new SpeechSynthesisUtterance(texto);
+      voz.lang = 'es-ES';
+      window.speechSynthesis.speak(voz);
+      document.getElementById('estado').textContent =
+        'Leyendo el texto en voz alta.';
+    }
+
+    function guia(tipo) {
+      const guias = {
+        whatsapp: 'Abre WhatsApp, elige un contacto, pulsa el espacio para escribir, redacta tu mensaje y toca el botón de enviar.',
+        letra: 'Abre los ajustes de tu móvil, busca Pantalla o Accesibilidad y selecciona Tamaño de fuente o Tamaño del texto.',
+        foto: 'Abre la conversación de WhatsApp, pulsa el icono del clip o el símbolo +, elige Galería, selecciona la foto y pulsa enviar.'
+      };
+      document.getElementById('guiaTexto').textContent = guias[tipo];
+    }
+
+    function prepararMensaje() {
+      const texto = document.getElementById('mensaje').value.trim();
+      document.getElementById('respuesta').textContent = texto
+        ? 'Este es el mensaje que has introducido: ' + texto
+        : 'Primero escribe o pega un mensaje.';
     }
   </script>
 </body>
