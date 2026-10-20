@@ -168,10 +168,10 @@ async function consultar(campoId, respuestaId, explicar = false) {
     salida.textContent = datos.reply || "No he recibido una respuesta.";
     estado.textContent = "Respuesta preparada.";
   } catch (error) {
-    salida.textContent = "No he podido conectar con el asistente. Comprueba la conexión a Internet e inténtalo de nuevo.";
-    estado.textContent = "No se ha podido completar la consulta.";
-  }
+  salida.textContent = "Error: " + error.message;
+  estado.textContent = "No se ha podido completar la consulta.";
 }
+
 
 function guia(tema) {
   document.getElementById("guiaRespuesta").textContent =
